@@ -1,11 +1,21 @@
+// server.js
 import app from './src/app.js'
+import { connectDB, client } from './src/database/init.mongodb.js'
+import checkActiveConnections from './src/helpers/checkActiveConnections.js'
 
-const PORT = 3055
+const PORT = process.env.PORT || 3055
 
-const server = app.listen(PORT, () => {
-    console.log(`Server run at PORT: ${PORT}!`)
-})
+connectDB().then(() => {
+  checkActiveConnections()
+  const server = app.listen(PORT, () => {
+    console.log(`🚀 Server is running at http://localhost:${PORT}`)
+  })
 
-process.on('SIGINT', () => {
-    server.close ( () => console.log(`SERVER CLOSED!`))
+  process.on('SIGINT', async () => {
+    await client.close() // ✅ Properly close MongoDB
+    server.close(() => {
+      console.log('🛑 Server closed!')
+      process.exit(0)
+    })
+  })
 })

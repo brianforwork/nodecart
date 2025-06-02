@@ -2,7 +2,7 @@
 import app from './src/app.js'
 import { connectDB, client } from './src/database/init.mongodb.js'
 
-const PORT = process.env.PORT || 3055
+const PORT = process.env.PORT || 3000
 
 connectDB().then(() => {
   const server = app.listen(PORT, () => {

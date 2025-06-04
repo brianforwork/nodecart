@@ -7,17 +7,23 @@ const COLLECTION_NAME = 'Keys'
 
 
 function normalizeObjectId(id) {
-  return typeof id === 'string' ? new ObjectId(id) : id
+  if (!id) {
+    throw new Error('normalizeObjectId received invalid id: ' + id);
+  }
+
+  return typeof id === 'string' ? new ObjectId(id) : id;
 }
 
 export const KeyTokenModel = {
-  async createOrUpdate({ userId, publicKey, refreshToken = [] }) {
+  async createOrUpdate({ userId, privateKey1, privateKey2, refreshToken = [] }) {
     const db = await connectDB()
     const result = await db.collection(COLLECTION_NAME).updateOne(
       { user: normalizeObjectId(userId) },
       {
         $set: {
-          publicKey,
+          // publicKey, USING FOR ASYMMETRIC
+          privateKey1,
+          privateKey2,
           updatedAt: new Date(),
         },
         $setOnInsert: {

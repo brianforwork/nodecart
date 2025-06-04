@@ -8,11 +8,8 @@ export const ShopModel = {
   async insertOne(shopData) {
     const db = await connectDB();
     const now = new Date();
-
-    // Normalize email casing
     const email = shopData.email?.trim().toLowerCase();
-
-    // Manual schema-like shaping
+  
     const shop = {
       name: shopData.name?.trim(),
       email,
@@ -23,8 +20,9 @@ export const ShopModel = {
       createdAt: now,
       updatedAt: now,
     };
-
-    return db.collection(COLLECTION_NAME).insertOne(shop);
+  
+    const result = await db.collection(COLLECTION_NAME).insertOne(shop);
+    return { ...shop, _id: result.insertedId }; // ✅ return full shop with _id
   },
 
   async findByEmail(input) {

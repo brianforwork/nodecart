@@ -1,3 +1,4 @@
+// app.js
 import express from "express"
 import mainRoutes from "../src/routes/index.js"
 import morgan from "morgan"
@@ -16,14 +17,28 @@ app.use(express.urlencoded({
     extended: true
 }))
 
-// Initilize Database
-
 // checkActiveConnections()
 // checkOverLoad()
 
 // Initilize Routes
 app.use('/', mainRoutes)
+
 // Handle Error
+app.use((req, res, next) => {
+    const error = new Error('Not Found') 
+    error.status = 404
+    next(error)
+})
+
+app.use((error, req, res, next) => {
+    const statusCode = error.status || 500
+    return res.status(statusCode).json({
+        status: 'error',
+        code: statusCode || 500,
+        message: error.message || 'Internal Error!'
+    })
+})
+
 
 export default app
 

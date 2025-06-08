@@ -24,15 +24,14 @@ export const KeyTokenModel = {
           // publicKey, USING FOR ASYMMETRIC
           privateKey1,
           privateKey2,
+          refreshToken,
           updatedAt: new Date(),
         },
         $setOnInsert: {
           user: normalizeObjectId(userId),
+          refreshTokensUsed: [], 
           createdAt: new Date(),
-        },
-        $addToSet: {
-          refreshToken: { $each: refreshToken },
-        },
+        }
       },
       { upsert: true }
     );
@@ -63,6 +62,20 @@ export const KeyTokenModel = {
       {
         $pull: { refreshToken: token },
         $set: { updatedAt: new Date() },
+      }
+    );
+  },
+
+  async findOneAndUpdate(filter, update, options = {}) {
+    const db = await connectDB();
+    return db.collection(COLLECTION_NAME).findOneAndUpdate(
+      // Normalize _id if it's userId-based
+      { ...filter, user: normalizeObjectId(filter.user) },
+      update,
+      {
+        upsert: true,
+        returnDocument: 'after', // Ensure updated doc is returned
+        ...options
       }
     );
   }

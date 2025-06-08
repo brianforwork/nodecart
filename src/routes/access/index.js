@@ -2,8 +2,9 @@
 'use strict'
 import express from "express"
 import AccessController from "../../controllers/access.controller.js"
-import { permission, asyncHandler } from "../../auth/checkAuth.js"
-import{ apiKey } from "../../auth/checkAuth.js"
+import { permission} from "../../auth/checkAuth.js"
+import { apiKey } from "../../auth/checkAuth.js"
+import { asyncHandler } from "../../helpers/asyncHandler.js"
 const router = express.Router()
 
 // // Check API Key
@@ -14,6 +15,13 @@ const router = express.Router()
 
 // Sign Up Route
 router.post('/shop/signup', asyncHandler(AccessController.signUp))
+
+// Log In Route
+router.post('/shop/login', asyncHandler(AccessController.logIn))
+
+// Authentication
+
+// Log Out Route
 
 
 

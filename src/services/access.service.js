@@ -7,7 +7,7 @@ import KeyTokenService from "./keyToken.service.js"
 import { createTokenPair } from "../auth/authUtils.js"
 import getInfoData from "../utils/index.js"
 import { error } from "node:console"
-import { BadRequestError } from "../core/error.response.js"
+import { AuthFailureError, BadRequestError } from "../core/error.response.js"
 
 const roleShop = {
     SHOP: 'SHOP',
@@ -17,6 +17,32 @@ const roleShop = {
 }
 
 class AccessService {
+
+    static logIn = async ({ email, password, refreshToken = null }) => {
+        const foundShop = await ShopModel.findByEmail({ email }) 
+        if (!foundShop) throw new BadRequestError('Shop is not registered!')
+        
+        const match = bycrypt.compare(password, foundShop.password) 
+        if (!match) throw new AuthFailureError('Your credential is wrong!') 
+        
+        const privateKey1 = crypto.randomBytes(64).toString('hex')
+        const privateKey2 = crypto.randomBytes(64).toString('hex')
+
+        const tokens = await createTokenPair({ userId: foundShop._id, email }, privateKey1, privateKey2)
+
+        await KeyTokenService.createKeyToken({ // Store a pair of key to database
+            userId: foundShop._id,
+            privateKey1,
+            privateKey2,
+            refreshToken: tokens.refreshToken
+        })
+
+        return {
+            shop: getInfoData({fields: ['_id', 'name', 'email'], object: foundShop}),
+            tokens
+        }
+    }
+
     static signUp = async ({name, email, password}) => {
         // Check Email
         const foundShop = await ShopModel.findByEmail({ email })

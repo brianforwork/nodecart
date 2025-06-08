@@ -2,6 +2,7 @@
 'use strict';
 
 import JWT from 'jsonwebtoken';
+import { asyncHandler } from '../helpers/asyncHandler';
 
 export const createTokenPair = async (payload, privateKey1, privateKey2) => {
   try {

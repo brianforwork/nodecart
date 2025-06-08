@@ -5,6 +5,15 @@ import { CREATED, OK } from "../core/success.respose.js"
 import AccessService from "../services/access.service.js"
 
 class AccessController {
+    logIn = async (req, res, next) => {
+        const result = await AccessService.logIn(req.body)
+
+        return new OK({
+            message: 'Log In Successfully!',
+            metadata: result
+        }).send(res)
+    }
+
     signUp = async (req, res, next) => {
         const result = await AccessService.signUp(req.body)
 

@@ -3,7 +3,7 @@
 
 import { CREATED, OK } from "../core/success.respose.js"
 import AccessService from "../services/access.service.js"
-import KeyTokenService from "../services/keyToken.service.js"
+
 
 class AccessController {
     logIn = async (req, res, next) => {
@@ -30,6 +30,15 @@ class AccessController {
 
         return new CREATED({
             message: 'Account Registered Successfully!',
+            metadata: result
+        }).send(res)
+    }
+
+    refreshToken = async (req, res, next) => {
+        const result = await AccessService.handleRefreshToken(req.body.refreshToken)
+
+        return new CREATED({
+            message: 'Access Token And Refresh Token Created Successfully!',
             metadata: result
         }).send(res)
     }

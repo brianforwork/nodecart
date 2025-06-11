@@ -14,10 +14,6 @@ const roleShop = {
 }
 
 class AccessService {
-    static logOut = async () => {
-        // No key store anymore — just let frontend delete token or expire it
-        return { message: 'Logout logic handled on frontend (stateless JWT).' };
-    };
 
     static logIn = async ({ email, password }) => {
         const foundShop = await ShopModel.findByEmail({ email });
@@ -63,6 +59,15 @@ class AccessService {
             }
         };
     };
+
+    static logOut = async () => {
+        // No key store anymore — just let frontend delete token or expire it
+        return { message: 'Logout logic handled on frontend (stateless JWT).' };
+    };
+
+    static handleRefreshToken = async (refreshToken) => {
+        
+    }
 
 }
 

@@ -5,6 +5,7 @@ import bcrypt from "bcrypt"
 import { createTokenPair } from "../auth/authUtils.js"
 import getInfoData from "../utils/index.js"
 import { AuthFailureError, BadRequestError } from "../core/error.response.js"
+import jwt, { decode } from 'jsonwebtoken'
 
 const roleShop = {
     SHOP: 'SHOP',
@@ -66,7 +67,22 @@ class AccessService {
     };
 
     static handleRefreshToken = async (refreshToken) => {
+        if (!refreshToken) throw new BadRequestError('Missing Refresh Token!')
         
+        const { userId, email } = jwt.verify(refreshToken, process.env.JWT_SECRET_REFRESH);
+        
+        const foundShop = await ShopModel.findById(userId)
+        if (!foundShop) throw new AuthFailureError('Shop not found!')
+        
+        const tokens = await createTokenPair({
+            userId: foundShop._id,
+            email: foundShop.email
+        });
+
+        return {
+            shop: getInfoData({ fields: ['_id', 'name', 'email'], object: foundShop }),
+            tokens
+        };
     }
 
 }

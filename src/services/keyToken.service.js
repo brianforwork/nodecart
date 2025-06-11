@@ -36,5 +36,19 @@ class KeyTokenService {
     }
   };
   
+  static findByUserId = async (userId) => {
+    console.log("FIND BY USER ID")
+    return await KeyTokenModel.findByUserId(userId) 
+  }
+
+  // static async findByUserId(userId) {
+  //   const db = await connectDB(); // make sure this returns the connected db
+  //   return await db.collection('Keys').findOne({ user: userId });
+  // }
+
+  static removeKeyById = async (id) => {
+    console.log('🔥 removeKeyById -> id:', id);
+    return await KeyTokenModel.removeRefreshToken(id)
+  }
 }
 export default KeyTokenService

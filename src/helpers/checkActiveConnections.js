@@ -1,3 +1,4 @@
+// helpers/checkActiveConnections.js
 'use strict'
 // Check the number of connections to database
 import { MongoClient } from "mongodb"

@@ -3,6 +3,7 @@
 
 import { CREATED, OK } from "../core/success.respose.js"
 import AccessService from "../services/access.service.js"
+import KeyTokenService from "../services/keyToken.service.js"
 
 class AccessController {
     logIn = async (req, res, next) => {
@@ -10,6 +11,16 @@ class AccessController {
 
         return new OK({
             message: 'Log In Successfully!',
+            metadata: result
+        }).send(res)
+    }
+
+    logOut = async (req, res, next) => {
+        
+        const result = await AccessService.logOut(req.keyStore)
+
+        return new OK({
+            message: 'Log Out Successfully!',
             metadata: result
         }).send(res)
     }

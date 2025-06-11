@@ -7,15 +7,18 @@ const COLLECTION_NAME = 'Keys'
 
 
 function normalizeObjectId(id) {
-  if (!id) {
-    throw new Error('normalizeObjectId received invalid id: ' + id);
+  console.log('📛 normalizeObjectId input:', id);
+
+  if (!id || typeof id !== 'string' || id.length !== 24 || !/^[a-fA-F0-9]{24}$/.test(id)) {
+    throw new Error(`Invalid ObjectId string: ${id}`);
   }
 
-  return typeof id === 'string' ? new ObjectId(id) : id;
+  return new ObjectId(id);
 }
 
 export const KeyTokenModel = {
   async createOrUpdate({ userId, privateKey1, privateKey2, refreshToken = [] }) {
+    console.log('CREATE OR UPDATE')
     const db = await connectDB()
     const result = await db.collection(COLLECTION_NAME).updateOne(
       { user: normalizeObjectId(userId) },
@@ -40,11 +43,16 @@ export const KeyTokenModel = {
   },
 
   async findByUserId(userId) {
+    console.log('FIND BY USER ID input:', userId);
     const db = await connectDB();
-    return db.collection(COLLECTION_NAME).findOne({ user: normalizeObjectId(userId) });
-  },
+    const normalizedUserId = normalizeObjectId(userId);
+    const result = await db.collection(COLLECTION_NAME).findOne({ user: normalizedUserId });
+    console.log('findByUserId result:', result);
+    return result;
+  }  ,
 
   async addRefreshToken(userId, token) {
+    console.log('ADD REFRESH TOKEN')
     const db = await connectDB();
     return db.collection(COLLECTION_NAME).updateOne(
       { user: normalizeObjectId(userId) },
@@ -55,26 +63,31 @@ export const KeyTokenModel = {
     );
   },
 
-  async removeRefreshToken(userId, token) {
+  async removeRefreshToken(userId) {
+    console.log('🧩 removeRefreshToken -> userId:', userId);
     const db = await connectDB();
     return db.collection(COLLECTION_NAME).updateOne(
       { user: normalizeObjectId(userId) },
       {
-        $pull: { refreshToken: token },
-        $set: { updatedAt: new Date() },
+        $unset: { refreshToken: "" },
+        $set: { updatedAt: new Date() }
       }
     );
   },
 
   async findOneAndUpdate(filter, update, options = {}) {
+    console.log('FIND ONE AND UPDATE:', filter);
     const db = await connectDB();
+  
+    const userId = filter.user;
+    const normalizedUserId = normalizeObjectId(userId);
+  
     return db.collection(COLLECTION_NAME).findOneAndUpdate(
-      // Normalize _id if it's userId-based
-      { ...filter, user: normalizeObjectId(filter.user) },
+      { ...filter, user: normalizedUserId },
       update,
       {
         upsert: true,
-        returnDocument: 'after', // Ensure updated doc is returned
+        returnDocument: 'after',
         ...options
       }
     );

@@ -1,5 +1,5 @@
-'use strict'
 // models/shop.model.js
+'use strict'
 import { connectDB } from "../database/init.mongodb.js"
 
 const COLLECTION_NAME = 'Shops'

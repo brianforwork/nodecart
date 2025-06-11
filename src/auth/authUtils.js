@@ -2,43 +2,24 @@
 'use strict';
 
 import JWT from 'jsonwebtoken';
-import { asyncHandler } from '../helpers/asyncHandler';
+import { asyncHandler } from '../helpers/asyncHandler.js';
+import { AuthFailureError, NotFoundError } from '../core/error.response.js';
+import { KeyTokenModel } from '../models/keytoken.model.js';
 
-export const createTokenPair = async (payload, privateKey1, privateKey2) => {
+const HEADER = {
+  API_KEY: 'x-api-key',
+  CLIENT_ID: 'x-client-id',
+  AUTHORIZATION: 'authorization'
+}
+
+export const createTokenPair = async (payload) => {
   try {
-    // ASYMMETRIC
-    // if (!privateKey || typeof privateKey !== 'string') {
-    //   throw new Error('Private key is missing or not a string');
-    // }
-    // if (!publicKey || typeof publicKey !== 'string') {
-    //   throw new Error('Public key is missing or not a string');
-    // }
-
-    if (!privateKey1 || typeof privateKey1 !== 'string') {
-      throw new Error('Private key is missing or not a string');
-    }
-    if (!privateKey2 || typeof privateKey2 !== 'string') {
-      throw new Error('Public key is missing or not a string');
-    }
-    // accessToken: signed with privateKey
-    const accessToken = JWT.sign(payload, privateKey1, {
-      // algorithm: 'RS256', ASYSMMETRIC
-      expiresIn: '2 days',
+    const accessToken = JWT.sign(payload, process.env.JWT_SECRET_ACCESS, {
+      expiresIn: '2d',
     });
 
-    // refreshToken: also signed with privateKey
-    const refreshToken = JWT.sign(payload, privateKey2, {
-      // algorithm: 'RS256', ASYMMETRIC
-      expiresIn: '7 days',
-    });
-
-    // verify accessToken using publicKey
-    JWT.verify(accessToken, privateKey1, (err, decode) => {
-      if (err) {
-        console.error('error verify::', err);
-      } else {
-        console.log('decode verify::', decode);
-      }
+    const refreshToken = JWT.sign(payload, process.env.JWT_SECRET_REFRESH, {
+      expiresIn: '7d',
     });
 
     return { accessToken, refreshToken };
@@ -47,3 +28,24 @@ export const createTokenPair = async (payload, privateKey1, privateKey2) => {
     throw error;
   }
 };
+
+export const authentication = asyncHandler((async (req, res, next) => {
+  // Check userId
+  const userId = req.headers[HEADER.CLIENT_ID]  
+  if (!userId) throw new AuthFailureError('Invalid Request!')
+  // Get Access Token
+  const keyStore = await KeyTokenModel.findByUserId(userId);
+  if (!keyStore) throw new NotFoundError('Not Found KeyStore!')
+  const accessToken = req.headers[HEADER.AUTHORIZATION]
+  console.log(accessToken)
+  if (!accessToken) throw new AuthFailureError('Invalid Access Token!')
+  
+  try {
+    const decodeUser = JWT.verify(accessToken, keyStore.privateKey1) 
+    if (userId !== decodeUser.userId) throw new AuthFailureError('Invalid UserId') 
+    req.keyStore = keyStore
+    return next()
+  } catch (error) {
+    throw error
+  }
+}))

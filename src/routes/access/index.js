@@ -21,7 +21,7 @@ router.post('/shop/signup', asyncHandler(AccessController.signUp))
 router.post('/shop/login', asyncHandler(AccessController.logIn))
 
 // Authentication
-router.use(authentication)
+// router.use(authentication)
 
 // Log Out Route
 router.post('/shop/logout', asyncHandler(AccessController.logOut))

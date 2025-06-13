@@ -26,6 +26,7 @@ export const ValidateProductModel = (productData) => {
     product_name: Joi.string().trim().required(),
     product_thumb: Joi.string().trim().required(),
     product_description: Joi.string().allow('', null),
+    product_slug: Joi.string().trim(),
     product_price: Joi.number().required(),
     product_quantity: Joi.number().integer().required(),
     product_type: Joi.string().valid('Clothing', 'Electronics', 'Furniture').required(),
@@ -42,7 +43,14 @@ export const ValidateProductModel = (productData) => {
         { is: 'Furniture', then: Joi.object().unknown(true) }
       ],
       otherwise: Joi.forbidden()
-    }).required()
+    }).required(),
+    product_ratingsAverage: Joi.number()
+    .min(1)
+    .max(5)
+    .default(4.5),
+    product_variations: Joi.array().default([]),
+    isDraft: Joi.boolean().default(true),
+    isPublished: Joi.boolean().default(false)
   })
 
   return productValidationSchema.validate(productData)

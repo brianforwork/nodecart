@@ -1,7 +1,7 @@
 // controllers/access.controller.js
 'use strict'
 
-import { CREATED, OK } from "../core/success.respose.js"
+import { CREATED, OK } from "../core/success.response.js"
 import AccessService from "../services/access.service.js"
 
 

@@ -19,7 +19,8 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
-    "mongodb": "^6.16.0"
+    "mongodb": "^6.16.0",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "compression": "^1.8.0",

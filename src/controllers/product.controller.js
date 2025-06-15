@@ -8,7 +8,8 @@ import {
     findAllProducts,
     findAllPublishedForShop,
     publishProductByShop as publishProductService,
-    unPublishProductByShop as unPublishProductService
+    unPublishProductByShop as unPublishProductService,
+    findAProductById as findAProductByIdService
 } from "../services/product.service.js"
 
 class ProductController {
@@ -44,11 +45,21 @@ class ProductController {
     }
 
     findAllProducts = async (req, res, next) => {
-        console.log('11111')
         const result = await findAllProducts()
 
         return new OK({
             message: 'Fetched products successfully!',
+            metadata: result
+        }).send(res)
+    }
+
+    findAProductById = async (req, res, next) => {
+        const result = await findAProductByIdService({
+            productId: req.params.product_id
+        })
+
+        return new OK({
+            message: 'Find a product successfully!',
             metadata: result
         }).send(res)
     }

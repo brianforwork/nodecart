@@ -16,7 +16,7 @@ router.post('/product/create', asyncHandler(ProductController.createNew))
 router.get('/product/drafts/all', asyncHandler(ProductController.findAllDraftsForShop))
 router.get('/product/publish/all', asyncHandler(ProductController.findAllPublishedForShop))
 router.get('/product/', asyncHandler(ProductController.findAllProducts))
-
+router.get('/product/:product_id', asyncHandler(ProductController.findAProductById))
 
 // COMMAND = Write Operations
 router.post('/product/publish/:product_id', asyncHandler(ProductController.publishProductByShop))

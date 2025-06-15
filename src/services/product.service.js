@@ -9,7 +9,8 @@ import { findAllDraftsForShop as findDraftsRepo } from "../models/repositories/p
 import { findAllPublishedForShop as findPublishedRepo } from "../models/repositories/product.repo.js"
 import { findAllProducts as findAllProductsRepo } from "../models/repositories/product.repo.js"
 import { publishProductByShop as publishProductRepo } from "../models/repositories/product.repo.js"
-import {unPublishProductByShop as unPublishProductRepo } from "../models/repositories/product.repo.js"
+import { unPublishProductByShop as unPublishProductRepo } from "../models/repositories/product.repo.js"
+import { findAProductById as findAProductByIdRepo } from "../models/repositories/product.repo.js"
 
 // Base Product class
 class Product {
@@ -127,6 +128,10 @@ const findAllProducts = async ({
   return await findAllProductsRepo({limit, sort, page, filter, select})
 }
 
+const findAProductById = async ({productId}) => { 
+  return await findAProductByIdRepo({productId})
+}
+
 // Command: write operations
 const publishProductByShop = async ({ product_shop, product_id }) => {
   return await publishProductRepo({product_shop, product_id})
@@ -136,4 +141,4 @@ const unPublishProductByShop = async ({ product_shop, product_id }) => {
   return await unPublishProductRepo({product_shop, product_id})
 }
 
-export { ProductFactory, findAllDraftsForShop, findAllPublishedForShop, publishProductByShop, unPublishProductByShop, findAllProducts }
+export { ProductFactory, findAllDraftsForShop, findAllPublishedForShop, publishProductByShop, unPublishProductByShop, findAllProducts, findAProductById }

@@ -56,6 +56,13 @@ export const findAllProducts = async ({
     .toArray()
 }
 
+export const findAProductById = async ({ productId }) => {
+  const db = await connectDB()
+
+  return await db.collection('Products').findOne({ _id: new ObjectId(productId) })
+  
+}
+
 export const publishProductByShop = async ({ product_shop, product_id }) => {
   const db = await connectDB()
   const query = {

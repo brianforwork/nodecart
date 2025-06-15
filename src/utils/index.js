@@ -2,6 +2,10 @@
 
 import lodash from 'lodash'
 
-export default function getInfoData({ fields = [], object = [] }) {
+export function getInfoData({ fields = [], object = [] }) {
     return lodash.pick(object, fields)
 } 
+
+export function getSelectData(select = []) {
+    return Object.fromEntries(select.map(el => [el, 1]))
+}

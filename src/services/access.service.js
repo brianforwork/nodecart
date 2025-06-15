@@ -3,7 +3,7 @@
 import { ShopModel } from "../models/shop.model.js"
 import bcrypt from "bcrypt"
 import { createTokenPair } from "../auth/authUtils.js"
-import getInfoData from "../utils/index.js"
+import { getInfoData } from "../utils/index.js"
 import { AuthFailureError, BadRequestError } from "../core/error.response.js"
 import jwt, { decode } from 'jsonwebtoken'
 

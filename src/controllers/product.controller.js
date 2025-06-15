@@ -5,6 +5,7 @@ import { CREATED, OK } from "../core/success.response.js"
 import {
     ProductFactory,
     findAllDraftsForShop,
+    findAllProducts,
     findAllPublishedForShop,
     publishProductByShop as publishProductService,
     unPublishProductByShop as unPublishProductService
@@ -38,6 +39,16 @@ class ProductController {
 
         return new OK({
             message: 'Retrieve Full List Of Published Products Successfully!',
+            metadata: result
+        }).send(res)
+    }
+
+    findAllProducts = async (req, res, next) => {
+        console.log('11111')
+        const result = await findAllProducts()
+
+        return new OK({
+            message: 'Fetched products successfully!',
             metadata: result
         }).send(res)
     }

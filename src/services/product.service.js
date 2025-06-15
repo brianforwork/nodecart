@@ -7,6 +7,7 @@ import { ObjectId } from "mongodb"
 import slugify from "slugify"
 import { findAllDraftsForShop as findDraftsRepo } from "../models/repositories/product.repo.js"
 import { findAllPublishedForShop as findPublishedRepo } from "../models/repositories/product.repo.js"
+import { findAllProducts as findAllProductsRepo } from "../models/repositories/product.repo.js"
 import { publishProductByShop as publishProductRepo } from "../models/repositories/product.repo.js"
 import {unPublishProductByShop as unPublishProductRepo } from "../models/repositories/product.repo.js"
 
@@ -116,6 +117,15 @@ const findAllPublishedForShop = async ({ product_shop, limit = 50, skip = 0 }) =
   return await findPublishedRepo({ query, limit, skip })
 }
 
+const findAllProducts = async ({
+  limit = 50,
+  sort = 'ctime',
+  page = 1,
+  filter = { isPublished: true },
+  select
+} = {}) => { 
+  return await findAllProductsRepo({limit, sort, page, filter, select})
+}
 
 // Command: write operations
 const publishProductByShop = async ({ product_shop, product_id }) => {
@@ -126,4 +136,4 @@ const unPublishProductByShop = async ({ product_shop, product_id }) => {
   return await unPublishProductRepo({product_shop, product_id})
 }
 
-export { ProductFactory, findAllDraftsForShop, findAllPublishedForShop, publishProductByShop, unPublishProductByShop }
+export { ProductFactory, findAllDraftsForShop, findAllPublishedForShop, publishProductByShop, unPublishProductByShop, findAllProducts }

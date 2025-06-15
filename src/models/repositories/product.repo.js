@@ -3,6 +3,7 @@
 
 import { connectDB } from '../../database/init.mongodb.js'
 import { ObjectId } from 'mongodb'
+import { getSelectData } from '../../utils/index.js'
 
 export const findAllDraftsForShop = async ({ query, limit, skip }) => {
   const db = await connectDB()
@@ -29,6 +30,29 @@ export const findAllPublishedForShop = async ({ query, limit, skip }) => {
     .sort({ updatedAt: -1 })
     .skip(skip)
     .limit(limit)
+    .toArray()
+}
+
+export const findAllProducts = async ({
+  limit = 50,
+  sort = 'ctime',
+  page = 1,
+  filter = { isPublished: true },
+  select
+} = {}) => {
+  const db = await connectDB()
+
+  const numPageSkip = (page - 1) * limit
+  const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
+
+  return await db.collection('Products')
+    .find({
+    ... filter
+    })
+    .sort(sortBy)
+    .skip(numPageSkip)
+    .limit(limit)
+    .project(getSelectData(select))
     .toArray()
 }
 
@@ -79,3 +103,5 @@ export const unPublishProductByShop = async ({ product_shop, product_id }) => {
 
   return result
 }
+
+

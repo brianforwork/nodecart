@@ -9,7 +9,8 @@ import {
     findAllPublishedForShop,
     publishProductByShop as publishProductService,
     unPublishProductByShop as unPublishProductService,
-    findAProductById as findAProductByIdService
+    findAProductById as findAProductByIdService,
+    updateProductById as updateProductByIdService
 } from "../services/product.service.js"
 
 class ProductController {
@@ -84,6 +85,22 @@ class ProductController {
 
         return new OK({
             message: 'UnPublish A Product Successfully!',
+            metadata: result
+        }).send(res)
+    }
+
+    updateProductById = async (req, res, next) => {
+        const { productId } = req.params
+        const payloadUpdate = req.body
+
+        const result = await updateProductByIdService(productId, payloadUpdate)
+
+        if (!result.value) {
+            throw new NotFoundError('Product not found')
+        }
+
+        return new OK({
+            message: 'Update A Product successfully!',
             metadata: result
         }).send(res)
     }

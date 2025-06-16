@@ -11,6 +11,7 @@ const router = express.Router()
 
 // Create New Product Route
 router.post('/product/create', asyncHandler(ProductController.createNew))
+router.patch('/product/:productId', asyncHandler(ProductController.updateProductById))
 
 // Query = Read Operations
 router.get('/product/drafts/all', asyncHandler(ProductController.findAllDraftsForShop))

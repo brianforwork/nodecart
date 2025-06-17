@@ -12,6 +12,7 @@ import { publishProductByShop as publishProductRepo } from "../models/repositori
 import { unPublishProductByShop as unPublishProductRepo } from "../models/repositories/product.repo.js"
 import { findAProductById as findAProductByIdRepo } from "../models/repositories/product.repo.js"
 import { updateProductById as updateProductByIdRepo } from "../models/repositories/product.repo.js"
+import { updateAttributesByProductType as updateAttributesByProductTypeRepo } from "../models/repositories/attribute.repo.js"
 
 // Base Product class
 class Product {
@@ -141,8 +142,31 @@ const unPublishProductByShop = async ({ product_shop, product_id }) => {
 
 // UPDATE
 const updateProductById = async ({ productId, payloadUpdate }) => {
-  return await updateProductByIdRepo({productId, payloadUpdate})
+  const { product_attributes: attributeUpdates, ...productUpdates } = payloadUpdate
+
+  // 1. Update top-level fields
+  const updatedProduct = await updateProductByIdRepo({ productId, payloadUpdate: productUpdates })
+
+  // 2. Update attributes (only if attributeUpdates present)
+  if (attributeUpdates) {
+    const product = await findAProductByIdRepo({ productId })
+
+    if (!product) throw new Error('Can not find the product!')
+
+    if (!product?.product_attributes || !product?.product_type) {
+      throw new Error('Missing attribute reference or product type')
+    }
+
+    await updateAttributesByProductTypeRepo({
+      productType: product.product_type,
+      attrId: product.product_attributes,
+      updates: attributeUpdates
+    })
+  }
+
+  return updatedProduct
 }
+
 
 export {
   ProductFactory,

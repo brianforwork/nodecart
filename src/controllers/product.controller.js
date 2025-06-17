@@ -2,6 +2,7 @@
 'use strict'
 
 import { CREATED, OK } from "../core/success.response.js"
+import { NotFoundError } from "../core/error.response.js"
 import {
     ProductFactory,
     findAllDraftsForShop,
@@ -93,9 +94,9 @@ class ProductController {
         const { productId } = req.params
         const payloadUpdate = req.body
 
-        const result = await updateProductByIdService(productId, payloadUpdate)
+        const result = await updateProductByIdService({ productId, payloadUpdate })
 
-        if (!result.value) {
+        if (!result) {
             throw new NotFoundError('Product not found')
         }
 

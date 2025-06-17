@@ -112,27 +112,19 @@ export const unPublishProductByShop = async ({ product_shop, product_id }) => {
 }
 
 export const updateProductById = async ({ productId, payloadUpdate }) => {
+
   const db = await connectDB()
   const filter = { _id: new ObjectId(productId) }
 
-  const finalUpdatePayload = {}
-  
-  // Flatten product_attributes into nested dot notation (MongoDB style)
-  if (payloadUpdate.product_attributes) {
-    for (const [key, value] of Object.entries(payloadUpdate.product_attributes)) {
-      finalUpdatePayload[`product_attributes.${key}`] = value
-    }
-    delete payloadUpdate.product_attributes
-  }
-
-  // Add top-level fields
-  Object.assign(finalUpdatePayload, payloadUpdate)
+  // Don’t flatten product_attributes — it's a reference
+  delete payloadUpdate.product_attributes
 
   const result = await db.collection('Products').findOneAndUpdate(
     filter,
-    { $set: finalUpdatePayload },
+    { $set: payloadUpdate },
     { returnDocument: 'after' }
   )
 
-  return result.value
+
+  return result
 }

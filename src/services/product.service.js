@@ -13,6 +13,7 @@ import { unPublishProductByShop as unPublishProductRepo } from "../models/reposi
 import { findAProductById as findAProductByIdRepo } from "../models/repositories/product.repo.js"
 import { updateProductById as updateProductByIdRepo } from "../models/repositories/product.repo.js"
 import { updateAttributesByProductType as updateAttributesByProductTypeRepo } from "../models/repositories/attribute.repo.js"
+import { insertInventory as insertInventoryRepo } from "../models/repositories/inventory.repo.js"
 
 // Base Product class
 class Product {
@@ -75,10 +76,19 @@ class Product {
     const resultProduct = await ProductModel.createProductWithRef(productData)
     if (!resultProduct.insertedId) throw new Error("Failed to create product")
 
+    // Step 4: Insert to Inventory
+    const resultInventory = await insertInventoryRepo({
+      productId: resultProduct.insertedId.toString(),
+      quantity: productData.product_quantity,
+      shopId: productData.product_shop.toString()
+    })
+    if (!resultInventory.insertedId) throw new Error("Failed to insert to Inventory")
+
     return {
       _id: resultProduct.insertedId,
       ...productData
     }
+
   }
 }
 

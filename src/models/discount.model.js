@@ -22,7 +22,7 @@ export const ValidateDiscountModel = (discountData) => {
         discount_value: Joi.number().integer().required(),
         discount_code: Joi.string().required(),
         discount_start_date: Joi.date().required(),
-        discount_end_date: Joi.data().required(),
+        discount_end_date: Joi.date().required(),
         discount_max_used: Joi.number().integer().required(),
         discount_used: Joi.number().integer().required(),
         discount_users_used: Joi.array().default([]),

@@ -1,0 +1,15 @@
+// discount.controller.js
+'use strict'
+import { DiscountService } from "../services/discount.service.js"
+import { CREATED, OK } from "../core/success.response.js"
+
+export default class DiscountController {
+    static createNew = async (req, res, next) => {
+        const result = await DiscountService.createNewDiscountCode(req.body)
+
+        return new CREATED({
+            message: 'Create New Discount Code Successfully!',
+            metadata: result
+        }).send(res) 
+    }
+}

@@ -3,8 +3,10 @@
 import { connectDB } from "../database/init.mongodb.js"
 import { ValidateDiscountModel } from "../models/discount.model.js"
 import { BadRequestError } from '../core/error.response.js'
-import { findProductsAppliedByADiscount as findProductsAppliedByADiscountRepo } from "../models/repositories/discount.repo.js"
+import { deleteDiscount as deleteDiscountRepo, findProductsAppliedByADiscount as findProductsAppliedByADiscountRepo } from "../models/repositories/discount.repo.js"
 import { findAllDiscountsByShop as findAllDiscountsByShopRepo } from "../models/repositories/discount.repo.js"
+import { getDiscountAmount as getDiscountAmountRepo } from "../models/repositories/discount.repo.js"
+import { revokeUserDiscountUsage as revokeUserDiscountUsageRepo } from "../models/repositories/discount.repo.js"
 
 const COLLECTION_NAME = 'Discounts'
 
@@ -14,32 +16,15 @@ export class DiscountService {
         const db = await connectDB()
         // Destructure the required fields
         const {
-            code, start_date, end_date, is_active,
-            shopId, min_order_value, product_ids, applies_to, name, description,
-            type, value, max_value, max_uses, uses_count, max_uses_per_user
-          } = payload
-
-        // Validate the discount data
-        const { error, value: validatedData } = ValidateDiscountModel({
-            discount_code: code,
-            discount_name: name,
-            discount_description: description,
-            discount_type: type,
-            discount_value: value,
-            discount_start_date: start_date,
-            discount_end_date: end_date,
-            discount_max_used: max_uses,
-            discount_used: uses_count,
-            discount_per_user: max_uses_per_user,
-            discount_required_price: min_order_value,
-            discount_shopId: shopId,
-            discount_is_active: is_active,
-            discount_applies_to: applies_to,
-            discount_product_ids: product_ids
-            // discount_users_used will default to [] in Joi schema
-          });
+            discount_code, discount_start_date, discount_end_date, discount_is_active,
+            discount_shopId, discount_required_price, discount_product_ids,
+            discount_applies_to, discount_name, discount_description,
+            discount_type, discount_value, discount_max_used,
+            discount_used, discount_per_user
+          } = payload;
           
-        
+        const { error, value: validatedData } = ValidateDiscountModel(payload);
+          
         // Handle validation error
         if (error) {
             throw new BadRequestError(`Validation Error: ${error.message}`);
@@ -68,4 +53,15 @@ export class DiscountService {
         return await findAllDiscountsByShopRepo({ shopId });
     }
 
+    static async getAmountDiscount({ discount_code, products }) {
+        return await getDiscountAmountRepo({ discount_code, products })
+    }
+
+    static async deleteDiscount({ discountId }) {
+        return await deleteDiscountRepo({ discountId });
+    }
+
+    static async revokeUserDiscountUsage({ codeId, shopId, userId }) {
+        return await revokeUserDiscountUsageRepo({ codeId, shopId, userId });
+      }
 }

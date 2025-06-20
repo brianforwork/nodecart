@@ -2,8 +2,9 @@
 'use strict'
 import { connectDB } from "../database/init.mongodb.js"
 import { ValidateDiscountModel } from "../models/discount.model.js"
-import { BadRequestError, NotFoundError } from '../core/error.response.js'
+import { BadRequestError } from '../core/error.response.js'
 import { findProductsAppliedByADiscount as findProductsAppliedByADiscountRepo } from "../models/repositories/discount.repo.js"
+import { findAllDiscountsByShop as findAllDiscountsByShopRepo } from "../models/repositories/discount.repo.js"
 
 const COLLECTION_NAME = 'Discounts'
 
@@ -61,6 +62,10 @@ export class DiscountService {
 
     static async findProductsAppliedByADiscount({discount_code}) {
         return findProductsAppliedByADiscountRepo({discount_code})
+    }
+
+    static async findAllDiscountsByShop({ shopId }) {
+        return await findAllDiscountsByShopRepo({ shopId });
     }
 
 }

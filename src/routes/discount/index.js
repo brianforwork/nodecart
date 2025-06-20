@@ -9,5 +9,7 @@ const router = express.Router()
 
 router.post('/discount', asyncHandler(DiscountController.createNew))
 router.get('/discount/:code/products', asyncHandler(DiscountController.findProductsAppliedByADiscount))
+router.get('/discount/shop/:shopId', asyncHandler(DiscountController.findAllDiscountsByShop));
+
 
 export default router

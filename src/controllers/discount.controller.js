@@ -24,4 +24,14 @@ export default class DiscountController {
         }).send(res)
     }
     
+    static findAllDiscountsByShop = async (req, res, next) => {
+        const { shopId } = req.params;
+      
+        const result = await DiscountService.findAllDiscountsByShop({ shopId });
+      
+        return new OK({
+          message: 'Fetched all discounts for shop successfully!',
+          metadata: result
+        }).send(res);
+    };
 }

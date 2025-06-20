@@ -1,5 +1,6 @@
 'use strict'
 import { connectDB } from "../../database/init.mongodb.js"
+import { ObjectId } from "mongodb"
 import { NotFoundError } from "../../core/error.response.js"
 import { findAllProducts, findManyProductsByIds } from "../../models/repositories/product.repo.js"
 
@@ -24,3 +25,18 @@ export const findProductsAppliedByADiscount = async ({discount_code}) => {
         return findManyProductsByIds({ ids: foundDiscount.discount_product_ids })
     }
 }
+
+export const findAllDiscountsByShop = async ({ shopId }) => {
+    const db = await connectDB();
+  
+    const discounts = await db.collection('Discounts').find({
+      discount_shopId: new ObjectId(shopId)
+    }).project({
+        discount_name: 1,
+        discount_code: 1,
+        discount_description: 1,
+        _id: 0 // optional: hide _id if you don't want it
+    }).toArray();
+  
+    return discounts;
+};

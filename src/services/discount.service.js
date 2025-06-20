@@ -3,6 +3,7 @@
 import { connectDB } from "../database/init.mongodb.js"
 import { ValidateDiscountModel } from "../models/discount.model.js"
 import { BadRequestError, NotFoundError } from '../core/error.response.js'
+import { findProductsAppliedByADiscount as findProductsAppliedByADiscountRepo } from "../models/repositories/discount.repo.js"
 
 const COLLECTION_NAME = 'Discounts'
 
@@ -31,8 +32,12 @@ export class DiscountService {
             discount_per_user: max_uses_per_user,
             discount_required_price: min_order_value,
             discount_shopId: shopId,
-            // discount_users_used: [] // set default here if needed
-        });
+            discount_is_active: is_active,
+            discount_applies_to: applies_to,
+            discount_product_ids: product_ids
+            // discount_users_used will default to [] in Joi schema
+          });
+          
         
         // Handle validation error
         if (error) {
@@ -54,6 +59,8 @@ export class DiscountService {
 
     }
 
-    
+    static async findProductsAppliedByADiscount({discount_code}) {
+        return findProductsAppliedByADiscountRepo({discount_code})
+    }
 
 }

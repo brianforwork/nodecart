@@ -12,4 +12,16 @@ export default class DiscountController {
             metadata: result
         }).send(res) 
     }
+
+    static findProductsAppliedByADiscount = async (req, res, next) => {
+        const { code } = req.params
+    
+        const result = await DiscountService.findProductsAppliedByADiscount({ discount_code: code })
+    
+        return new OK({
+            message: 'Find List of Applied Discount Products Successfully!',
+            metadata: result
+        }).send(res)
+    }
+    
 }

@@ -8,5 +8,6 @@ import DiscountController from "../../controllers/discount.controller.js"
 const router = express.Router()
 
 router.post('/discount', asyncHandler(DiscountController.createNew))
+router.get('/discount/:code/products', asyncHandler(DiscountController.findProductsAppliedByADiscount))
 
 export default router

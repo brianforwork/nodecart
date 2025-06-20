@@ -128,3 +128,15 @@ export const updateProductById = async ({ productId, payloadUpdate }) => {
 
   return result
 }
+
+export const findManyProductsByIds = async ({ ids }) => {
+  const db = await connectDB()
+
+  const objectIds = ids.map(id => new ObjectId(id))
+
+  const products = await db.collection('Products').find({
+    _id: { $in: objectIds }
+  }).toArray()
+
+  return products
+}

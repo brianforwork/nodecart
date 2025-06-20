@@ -29,6 +29,16 @@ export const ValidateDiscountModel = (discountData) => {
         discount_per_user: Joi.number().integer().required(),
         discount_required_price: Joi.number().integer().required(),
         discount_shopId: JoiObjectId().required(),
+        
+        discount_is_active: Joi.boolean().default(true),
+        discount_applies_to: Joi.string().valid('all', 'specific').required(),
+        discount_product_ids: Joi.array()
+        .items(JoiObjectId())
+        .when('discount_applies_to', {
+          is: 'specific',
+          then: Joi.array().min(1).required(),
+          otherwise: Joi.array().default([]),
+        }),
     })
 
     return discountValidationSchema.validate(discountData)

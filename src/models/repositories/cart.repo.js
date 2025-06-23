@@ -40,6 +40,8 @@ export const updateUserCartQuantity = async (userId, product) => {
       )
     }
   
+    console.log("👉 Trying to update quantity for productId:", productId)
+  
     // Otherwise: increment quantity
     return await db.collection(COLLECTION_NAME).findOneAndUpdate(
       {
@@ -50,8 +52,29 @@ export const updateUserCartQuantity = async (userId, product) => {
       {
         $inc: { 'cart_products.$.quantity': quantity }
       },
-      { returnDocument: 'after' }
+      { returnDocument: 'after', returnOriginal: false }
     )
   }
   
+
+export const deleteAProductInCart = async ({ userId, productId }) => {
+  const db = await connectDB()
+
+  const objectProductId = new ObjectId(productId)
+
+  const query = { cart_userId: userId, cart_state: 'active' }
+  const updateSet = {
+    $pull: {
+      cart_products: {
+        productId: objectProductId
+      }
+    }
+  }
+
+  console.log("🧪 Delete query:", query)
+  console.log("🧪 UpdateSet:", updateSet)
+
+  return await db.collection(COLLECTION_NAME).updateOne(query, updateSet)
+  
+}
   

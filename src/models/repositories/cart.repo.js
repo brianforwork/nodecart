@@ -78,3 +78,14 @@ export const deleteAProductInCart = async ({ userId, productId }) => {
   
 }
   
+export const findCartById = async ({ cartId }) => {
+
+  const db = await connectDB()
+
+  const objectCartId = new ObjectId(cartId)
+
+  return await db.collection(COLLECTION_NAME).findOne({
+    _id: objectCartId,
+    cart_state: 'active'
+  })
+}

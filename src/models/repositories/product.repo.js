@@ -142,14 +142,21 @@ export const findManyProductsByIds = async ({ ids }) => {
 }
 
 export const checkProductsByServer = async (products) => {
-  return await Promise.all(products.map(async product => {
-    const foundProduct = await findAProductById({ product.productId }) 
+  if (!Array.isArray(products)) {
+    throw new Error("products must be an array");
+  }
+
+  return (await Promise.all(products.map(async product => {
+    if (!product || !product.productId) return null;
+
+    const foundProduct = await findAProductById({ productId: product.productId });
     if (foundProduct) {
       return {
         price: foundProduct.product_price,
         quantity: product.quantity,
         productId: product.productId
-      }
+      };
     }
-  }))
-} 
+    return null;
+  }))).filter(Boolean);
+};

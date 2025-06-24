@@ -80,6 +80,10 @@ export const getDiscountAmount = async ({ discount_code, products }) => {
       throw new Error('Discount code is outside the valid time range!');
     }
   
+    console.log(`Products in calculating::: `, products)
+  
+
+  
     // Compute total order value
     const totalOrder = Array.isArray(products)
       ? products.reduce((sum, product) => {
@@ -88,6 +92,8 @@ export const getDiscountAmount = async ({ discount_code, products }) => {
           return sum + quantity * price;
         }, 0)
       : 0;
+  
+    console.log(`Total Price::: `, totalOrder)
   
     // Validate minimum order value
     if (

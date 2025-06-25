@@ -26,3 +26,28 @@ export const insertInventory = async ({ productId, quantity, location = "Unknown
   })
 }
 
+export const reservationInventory = async ({ productId, quantity, cartId }) => {
+  const query = {
+    inven_productId: productId,
+    inven_stock: { $gte: quantity }
+  }
+
+  const updateSet = {
+    $inc: {
+      inven_stock: -quantity
+    },
+    $push: {
+      inven_reservation: {
+        quantity,
+        cartId,
+        createdOn: new Date() 
+      }
+    }
+  }
+
+  const db = await connectDB()
+
+  return db.collection(COLLECTION_NAME).updateOne(query, updateSet, {upsert: true})
+
+}
+

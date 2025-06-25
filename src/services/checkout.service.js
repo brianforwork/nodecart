@@ -1,8 +1,11 @@
+// checkout.service.js
 'use strict'
 import { BadRequestError } from "../core/error.response.js"
 import { findCartById as findCartByIdRepo } from "../models/repositories/cart.repo.js"
 import { checkProductsByServer as checkProductsByServerRepo } from "../models/repositories/product.repo.js"
 import { getDiscountAmount as getDiscountAmountRepo } from "../models/repositories/discount.repo.js"
+import RedisService from "./redis.service.js"
+import { OrderModel } from "../models/order.model.js"
 
 export class CheckOutService {
     static checkOutReview = async ({
@@ -75,4 +78,47 @@ export class CheckOutService {
 
     }
 
+    static orderByUser = async ({
+        shop_order_ids,
+        cartId,
+        userId,
+        userAddress,
+        userPayment
+    }) => {
+        const { shop_order_ids_new, checkOutOrder } = CheckOutService.checkOutReview({
+            cartId,
+            userId,
+            shop_order_ids
+        })
+
+        const products = shop_order_ids_new.flatMap(order => order.items_products) 
+        console.log("[1]::: ", products)
+
+        const acquiredProducts = []
+
+        for (let i = 0; i < products.length; i++) {
+            const { productId, quantity } = products[i] 
+
+            const keyLock = await RedisService.acquiredLock({ productId, quantity, cartId }) 
+            
+            acquiredProducts.push(keyLock ? true : false)
+
+            if (keyLock) {
+                await RedisService.releasedLock(keyLock)
+            }
+        }
+
+        if (acquiredProducts.includes(false)) {
+            throw new BadRequestError("There is a product that has not enough quantity!")
+        }
+
+        // Create new Order
+        const newOrder = await OrderModel.createOrder({
+            order_userId: userId,
+            order_checkout: checkOutOrder,
+            order_shipping: userAddress,
+            order_payment: userPayment,
+            order_products: shop_order_ids_new
+        })
+    }
 }
